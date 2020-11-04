@@ -184,7 +184,7 @@ int main(int argc, char * argv[]){
 	ville[3].yville=1624.90;
 	ville[3].dechet=1044;
 
-		// degradation
-		degradation(0.05, random_double(1.,9.)); //degradation d'une particule de 1cm est de environ 0.05cm/an et rayon initial compris entre 1 et 9 cm
+	// degradation
+	degradation(0.05, random_double(1.,9.)); //degradation d'une particule de 1cm est de environ 0.05cm/an et rayon initial compris entre 1 et 9 cm
 
 }
