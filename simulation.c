@@ -3,6 +3,27 @@
 #include <math.h>
 #include <time.h>
 
+// definition courant (on peut pas faire spirale parce que par le vx, vy)
+struct Courants {
+	double xAD;
+	double yAB;
+	double xBC;
+	double yCD;
+	double vitessex;
+	double vitessey;
+};
+
+struct Courants courant[4];
+	
+// definition ville
+struct Villes{
+	char * nom;
+	double xville;
+	double yville;
+	double dechet;
+};
+struct Villes ville[4];
+
 // random
 int randomnb(int max , int min){
 	double randomDomaine = RAND_MAX + 1.0;
@@ -10,175 +31,140 @@ int randomnb(int max , int min){
     return entier1;
 }
 // definition cadre total
-int xmax= ;
-int ymax= ;
+double xmax= 6411.29;
+double ymax= 3046.29;
 
 //coordonnées plastiques( definir avec cadre
-int xplas= ;
-int yplas= ;
+double xplas= 3205.64;
+double yplas= 2732;
 
-// definition courant (on peut pas faire spirale parce que par le vx, vy)
-struct courant {
-	char * nom;
-	int xA;
-	int yA;
-	int xB;
-	int yB;
-	int xC;
-	int yC;
-	int xD;
-	int yD;
-	float vitessex;
-	float vitessey;
-}
-	
-// definition ville
-struct ville{
-	char * nom;
-	int xville;
-	int yville;
-	float dechet;
-	
 
 // spirale (quand la particule rentre dans la zonespi)
 // probleme: car quand rentre peut en suite sortir donc il faut dire quand rentre sort plus JAMAIS
-int xAspi= ;
-int yAspi= ;
-int xBspi= ;
-int yBspi= ;
-int xCspi= ;
-int yCspi= ;
-int xDspi= ;
-int yDspi= ;
-float distspi=(x-xplas)*(x-xplas)+(y-yplas)*(y-yplas);
-float anglespi=ArcCos((x-xplas)/distspi);
-while (x!=xplas) {
-	distspi-= //fonc de diminution de r;
-	anglespi -= M_PI/10;
-	x= distspi*cos(anglespi);
-	y= distspi*sin(anglespi);
-}
+void spirale(double x, double y, int time){
+	double xADspi=1602.82;
+	double yABspi=2906.53;
+	double xBCspi=4808.46;
+	double yCDspi=1061.80;
+	double distspi=(x-xplas)*(x-xplas)+(y-yplas)*(y-yplas);
+	double anglespi=acos((x-xplas)/distspi);
+	while (x!=xplas) {
+		distspi-= //fonc de diminution de r;
+		anglespi -= M_PI/10;
+		x= distspi*cos(anglespi);
+		y= distspi*sin(anglespi);
+		time += 1;
+	}
 	// il faut aussi compter le temps et definir une fonction r qui diminue de - en - vite
+}
 		
 //defintion de r= rayon en fonction de la degradation du plastique
 
-
-
-
-
-// A. Propagation d'un paquet (x, y, r)
-void simulePaquet(double x, double y, double r) {
-    for (int i = 0; i < 1000; i++) {
-        // Vent
-        double ventX = 10;
-        double ventY = -0.001 * (x - 2000);
-
-        // Aléa
-        double ax = randomNumber(30) - 15;
-        double ay = randomNumber(30) - 15;
-
-        // Déplacer le paquet
-        x += ventX + ax;
-        y += ventY + ay;
-        r += 20 / r;
-
-        // C. Capteurs
-        for (int s = 0; s < 6; s++) {
-            double dx = x - capteurs[s].x;
-            double dy = y - capteurs[s].y;
-            double distance2 = dx * dx + dy * dy;
-            if (distance2 < r * r) {
-                capteurs[s].paquets += 1;
-            }
-        }
-
-        // Paquet toujours dans la zone d'intérêt?
-        if (x < 0) break;
-        if (y < 0) break;
-        if (x > 8000) break;
-        if (y > 5000) break;
-    }
-
-    // Pour la verification d'un paquet
-    // printf("%f %f %f\n", x, y, r);
+//deplacement des particules + degradation
+void deplacement(double x, double y, int time){
+	for (int i=0; i <5;i++){
+		// identification de la zone courant
+		if (x>=courant[i].xAD & x<=courant[i].xBC & y>=courant[i].yCD & y<=courant[i].yAB){
+			x += courant[i].vitessex;
+			y += courant[i].vitessey;
+			x +=randomnb(-(courant[i].vitessex)/10,(courant[i].vitessex)/10);
+			y +=randomnb(-(courant[i].vitessey)/10,(courant[i].vitessey)/10);
+			time += 1;
+			// ajouter degradation
+		}
+	}
+	if (x<=0 & x>=xmax & y<=0 & y>=ymax){ //si est sorti du cadre > va vers ville la plus prochefloat 
+		float dist =sqrt(pow((x-ville[0].xville),2)+pow((y-ville[0].yville),2));
+		float a ;//variable pour stoker chaque dist
+		for (int i=1; i<4; i++){
+			a = sqrt(pow((x-ville[0].xville),2)+pow((y-ville[0].yville),2));
+			if (a<= dist) {
+				dist=a;
+				int b=i; //variable pour stoker la ville la plus proche
+				x = ville[b].xville;
+				y = ville[b].yville;
+			}
+		
+		deplacement(x, y, time);
+		}
+	}
+	double xADspi=1602.82;
+	double yABspi=2906.53;
+	double xBCspi=4808.46;
+	double yCDspi=1061.80;
+	if (x>=xADspi & x<=xBCspi & y>=yCDspi & y<=yABspi){
+		spirale(x, y, time); // il faut decider ce qu'on veut renvoyer + ajouter degradation 
+	}
+	else {
+		deplacement(x, y, time);
+	}
 }
 
-double plausibilite(double detectionsSimulees, double detectionsObservees) {
-    double difference = detectionsSimulees - detectionsObservees;
-    double variance = detectionsSimulees;
-    if (variance < 0.0001) variance = 0.0001;
-    return exp(-difference * difference / (2 * variance));
+int main(int argc, char * argv[]){
+    srand(time(NULL));
+    
+    // A. Courants
+	// Alaska
+	courant[0].xAD = 3205.64; // en km
+	courant[0].yAB = 3046.57;
+	courant[0].xBC = 6411.29;
+	courant[0].yCD = 2906.53;
+	courant[0].vitessex = -1.56; // km/h
+	courant[0].vitessey = -1.56; // km/h
+
+	//California
+	courant[1].xAD = 4808.46;
+	courant[1].yAB = 2906.53;
+	courant[1].xBC = 6411.29;
+	courant[1].yCD = 1061.80;
+	courant[1].vitessex = -0.072 ; // km/h
+	courant[1].vitessey = -0.9; // km/h
+
+	//Kuroshivo
+	courant[2].xAD = 0;
+	courant[2].yAB = 2906.53;
+	courant[2].xBC = 1602.82;
+	courant[2].yCD = 1061.80;
+	courant[2].vitessex = randomnb(11,2); // km/h
+	courant[2].vitessey = 0.72; // km/h
+
+	//Nord-equatorial
+	courant[3].xAD = 0;
+	courant[3].yAB = 3046.57;
+	courant[3].xBC = 3205.64;
+	courant[3].yCD = 0;
+	courant[3].vitessex = -4.17; // km/h
+	courant[3].vitessey = 0; 
+
+
+	//Oya-shivo
+	courant[3].xAD = 0;
+	courant[3].yAB = 3046.57;
+	courant[3].xBC = 6411.29;
+	courant[3].yCD = 2906.53;
+	courant[3].vitessex = 0.0144; // km/h
+	courant[3].vitessey = -0.0144; // m par seconde à changer en km/h
+
+	// B. Villes
+	ville[0].nom= "Vancouver";
+	ville[0].xville=6411.29;
+	ville[0].yville=2906.53;
+	ville[0].dechet=1044; // kg/h
+
+	ville[1].nom= "San Fransisco";
+	ville[1].xville=6411.29;
+	ville[1].yville=2307.53;
+	ville[1].dechet=1044;
+
+	ville[2].nom= "Los Angeles";
+	ville[2].xville=6411.29;
+	ville[2].yville=1061.80;
+	ville[2].dechet=1044;
+
+	ville[3].nom= "Tokyo";
+	ville[3].xville=0;
+	ville[3].yville=1624.90;
+	ville[3].dechet=1044;
 }
 
-double simulePaquets(double x, double y, double r, int iterations) {
-    // Remettre les compteurs à 0
-    for (int i = 0; i < 6; i++) {
-        capteurs[i].paquets = 0;
-    }
-
-    // Simuler des paquets
-    for (int i = 0; i < iterations; i++) {
-        simulePaquet(x, y, r);
-    }
-
-    // E. Calcul de la plausibilite
-    double p = 1;
-    for (int i = 0; i < 6; i++) {
-        double paquetsParIteration = (double) capteurs[i].paquets / iterations;
-        p *= plausibilite(paquetsParIteration, capteurs[i].observation);
-    }
-
-    return p;
-}
-
-int main(int argc, char * argv[]) {
-    srandom(time(NULL));
-
-    // B. Capteurs
-    capteurs[0].x = 7340;
-    capteurs[0].y = 4020;
-    capteurs[0].observation = 0;
-
-    capteurs[1].x = 7500;
-    capteurs[1].y = 2880;
-    capteurs[1].observation = 0;
-
-    capteurs[2].x = 7420;
-    capteurs[2].y = 1910;
-    capteurs[2].observation = 3.0;
-
-    capteurs[3].x = 7250;
-    capteurs[3].y = 1340;
-    capteurs[3].observation = 0;
-
-    capteurs[4].x = 7380;
-    capteurs[4].y = 720;
-    capteurs[4].observation = 0;
-
-    capteurs[5].x = 6200;
-    capteurs[5].y = 280;
-    capteurs[5].observation = 0;
-
-    // D. Un point
-    double p = simulePaquets(2500, 3100, 10, 100);
-    for (int i = 0; i < 6; i++) {
-        printf("S%d  %d paquets\n", i, capteurs[i].paquets);
-    }
-
-    printf("Plausibilité: %0.5f\n", p);
-
-    // E. Toute la grille
-    for (int y = 0; y < 25; y++) {
-        for (int x = 0; x < 40; x++) {
-            // C. Simuler
-            double p = simulePaquets(100 + x * 200, 4900 - y * 200, 10, 100);
-
-            // F. Affichage
-            printf("\x1b[48;5;%dm  ", (int) floor(255 - p * 23));
-        }
-
-        printf("\x1b[0m\n");
-    }
-
-    return 0;
-}
+ 
