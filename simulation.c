@@ -14,7 +14,7 @@ struct Courants {
 };
 
 struct Courants courant[4];
-	
+
 // definition ville
 struct Villes{
 	char * nom;
@@ -27,7 +27,7 @@ struct Villes ville[4];
 // random
 int randomnb(int max , int min){
 	double randomDomaine = RAND_MAX + 1.0;
-    int entier1 = (int) (random() / randomDomaine * (abs(max)+abs(min)) +min);
+    int entier1 = (int) (rand() / randomDomaine * (abs(max)+abs(min)) +min);
     return entier1;
 }
 // definition cadre total
@@ -57,8 +57,6 @@ void spirale(double x, double y, int time){
 	}
 	// il faut aussi compter le temps et definir une fonction r qui diminue de - en - vite
 }
-		
-//defintion de r= rayon en fonction de la degradation du plastique
 
 //deplacement des particules + degradation
 void deplacement(double x, double y, int time){
@@ -73,7 +71,7 @@ void deplacement(double x, double y, int time){
 			// ajouter degradation
 		}
 	}
-	if (x<=0 & x>=xmax & y<=0 & y>=ymax){ //si est sorti du cadre > va vers ville la plus prochefloat 
+	if ((x<=0) & (x>=xmax) & (y<=0) & (y>=ymax)){ //si est sorti du cadre > va vers ville la plus prochefloat
 		float dist =sqrt(pow((x-ville[0].xville),2)+pow((y-ville[0].yville),2));
 		float a ;//variable pour stoker chaque dist
 		for (int i=1; i<4; i++){
@@ -84,7 +82,7 @@ void deplacement(double x, double y, int time){
 				x = ville[b].xville;
 				y = ville[b].yville;
 			}
-		
+
 		deplacement(x, y, time);
 		}
 	}
@@ -92,17 +90,37 @@ void deplacement(double x, double y, int time){
 	double yABspi=2906.53;
 	double xBCspi=4808.46;
 	double yCDspi=1061.80;
-	if (x>=xADspi & x<=xBCspi & y>=yCDspi & y<=yABspi){
-		spirale(x, y, time); // il faut decider ce qu'on veut renvoyer + ajouter degradation 
+	if ((x>=xADspi) & (x<=xBCspi) & (y>=yCDspi) & (y<=yABspi)){
+		spirale(x, y, time); // il faut decider ce qu'on veut renvoyer + ajouter degradation
 	}
 	else {
 		deplacement(x, y, time);
 	}
 }
 
+// random double
+double random_double(double min , double max){
+	double randomDomaine = RAND_MAX + 1.0;
+    double entier1 = (double) (rand() / randomDomaine * (abs(max)+abs(min)) +min);
+    return entier1;
+}
+// degradation que dans le continent de plastique
+int degradation(double diminution, double r_ini){
+	double tps_deg=0;
+	while (r_ini>0) {
+		double r_deg = r_ini - r_ini*diminution + random_double(0.001, 0.01) ;//rayon en fonction de la degradation du plastique par an
+		r_ini -= r_deg; // le rayon diminue de r_deg
+		if (r_ini<=0){
+			r_ini+=0;
+		}
+		tps_deg += r_deg * 20; // 20 ans pour degrader un cercle de rayon 1cm
+	}
+	printf("temps =  %f \n",tps_deg);
+}
+
 int main(int argc, char * argv[]){
     srand(time(NULL));
-    
+
     // A. Courants
 	// Alaska
 	courant[0].xAD = 3205.64; // en km
@@ -134,7 +152,7 @@ int main(int argc, char * argv[]){
 	courant[3].xBC = 3205.64;
 	courant[3].yCD = 0;
 	courant[3].vitessex = -4.17; // km/h
-	courant[3].vitessey = 0; 
+	courant[3].vitessey = 0;
 
 
 	//Oya-shivo
@@ -165,6 +183,8 @@ int main(int argc, char * argv[]){
 	ville[3].xville=0;
 	ville[3].yville=1624.90;
 	ville[3].dechet=1044;
-}
 
- 
+		// degradation
+		degradation(0.05, random_double(1.,9.)); //degradation d'une particule de 1cm est de environ 0.05cm/an et rayon initial compris entre 1 et 9 cm
+
+}
