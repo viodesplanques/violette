@@ -13,7 +13,7 @@ struct Courants {
 	double vitessey;
 };
 
-struct Courants courant[4];
+struct Courants courant[6];
 	
 // definition ville
 struct Villes{
@@ -42,19 +42,35 @@ double yplas= 2732;
 // spirale (quand la particule rentre dans la zonespi)
 // probleme: car quand rentre peut en suite sortir donc il faut dire quand rentre sort plus JAMAIS
 void spirale(double x, double y, int time){
-	double xADspi=1602.82;
-	double yABspi=2906.53;
-	double xBCspi=4808.46;
-	double yCDspi=1061.80;
+	double xplas= 3205.64;
+	double yplas= 2732;
 	double distspi=(x-xplas)*(x-xplas)+(y-yplas)*(y-yplas);
-	double anglespi=acos((x-xplas)/distspi);
-	while (x!=xplas) {
-		distspi-= //fonc de diminution de r;
-		anglespi -= M_PI/10;
-		x= distspi*cos(anglespi);
-		y= distspi*sin(anglespi);
-		time += 1;
+	double diffx= x-xplas;
+	double diffy= y-yplas;
+	double anglespi;
+	if (diffx>=0 && diffy>=0) {
+		anglespi=acos(fabs(diffx)/distspi);
 	}
+	else if (diffx<0 && diffy>=0) {
+		anglespi=M_PI/2 + acos(fabs(diffx)/distspi);
+	}
+	else if (diffx<0 && diffy<0) {
+		anglespi= M_PI +acos(fabs(diffx)/distspi);
+	}
+	else {
+		anglespi=3*M_PI/2+acos(fabs(diffx)/distspi);
+	}
+	printf("dist=%f", distspi);
+	while (distspi>=200) {
+		distspi-= distspi/20;
+		anglespi -= M_PI/10;
+		x= xplas + distspi*cos(anglespi);
+		y= yplas+ distspi*sin(anglespi);
+		time += 1;
+		printf("time=%d",time);
+	}
+	printf("%d\n", time);
+	printf("%f,%f", x, y);
 	// il faut aussi compter le temps et definir une fonction r qui diminue de - en - vite
 }
 		
@@ -62,7 +78,7 @@ void spirale(double x, double y, int time){
 
 //deplacement des particules + degradation
 void deplacement(double x, double y, int time){
-	for (int i=0; i <5;i++){
+	for (int i=0; i <6;i++){
 		// identification de la zone courant
 		if (x>=courant[i].xAD & x<=courant[i].xBC & y>=courant[i].yCD & y<=courant[i].yAB){
 			x += courant[i].vitessex;
@@ -70,10 +86,12 @@ void deplacement(double x, double y, int time){
 			x +=randomnb(-(courant[i].vitessex)/10,(courant[i].vitessex)/10);
 			y +=randomnb(-(courant[i].vitessey)/10,(courant[i].vitessey)/10);
 			time += 1;
-			// ajouter degradation
+			printf("bouge avec %d time %d",i, time);
 		}
+		continue;
 	}
-	if (x<=0 & x>=xmax & y<=0 & y>=ymax){ //si est sorti du cadre > va vers ville la plus prochefloat 
+	if (x<=0 & x>=xmax & y<=0 & y>=ymax){ //si est sorti du cadre > va vers ville la plus proche
+		printf("sortie\n");
 		float dist =sqrt(pow((x-ville[0].xville),2)+pow((y-ville[0].yville),2));
 		float a ;//variable pour stoker chaque dist
 		for (int i=1; i<4; i++){
@@ -83,6 +101,7 @@ void deplacement(double x, double y, int time){
 				int b=i; //variable pour stoker la ville la plus proche
 				x = ville[b].xville;
 				y = ville[b].yville;
+				printf("%s\n",ville[b].nom);
 			}
 		
 		deplacement(x, y, time);
@@ -93,6 +112,8 @@ void deplacement(double x, double y, int time){
 	double xBCspi=4808.46;
 	double yCDspi=1061.80;
 	if (x>=xADspi & x<=xBCspi & y>=yCDspi & y<=yABspi){
+		printf("spirale");
+		printf("%f,%f",x,y);
 		spirale(x, y, time); // il faut decider ce qu'on veut renvoyer + ajouter degradation 
 	}
 	else {
@@ -128,22 +149,30 @@ int main(int argc, char * argv[]){
 	courant[2].vitessex = randomnb(11,2); // km/h
 	courant[2].vitessey = 0.72; // km/h
 
-	//Nord-equatorial
-	courant[3].xAD = 0;
-	courant[3].yAB = 3046.57;
-	courant[3].xBC = 3205.64;
+	//Nord-equatorial 1
+	courant[3].xAD = 3205.64;
+	courant[3].yAB = 1061.80;
+	courant[3].xBC = 6411.29;
 	courant[3].yCD = 0;
 	courant[3].vitessex = -4.17; // km/h
 	courant[3].vitessey = 0; 
+	
+	//Nord-equatorial 2
+	courant[5].xAD = 0;
+	courant[5].yAB = 1061.80;
+	courant[5].xBC = 3205.64;
+	courant[5].yCD = 0;
+	courant[5].vitessex = -4.17; // km/h
+	courant[5].vitessey = 0.9 ;
 
 
 	//Oya-shivo
-	courant[3].xAD = 0;
-	courant[3].yAB = 3046.57;
-	courant[3].xBC = 6411.29;
-	courant[3].yCD = 2906.53;
-	courant[3].vitessex = 0.0144; // km/h
-	courant[3].vitessey = -0.0144; // m par seconde à changer en km/h
+	courant[4].xAD = 0;
+	courant[4].yAB = 3046.57;
+	courant[4].xBC = 6411.29;
+	courant[4].yCD = 2906.53;
+	courant[4].vitessex = 0.0144; // km/h
+	courant[4].vitessey = -0.0144; // m par seconde à changer en km/h
 
 	// B. Villes
 	ville[0].nom= "Vancouver";
@@ -165,6 +194,8 @@ int main(int argc, char * argv[]){
 	ville[3].xville=0;
 	ville[3].yville=1624.90;
 	ville[3].dechet=1044;
+
+	deplacement(6411.29, 2906.53, 0);
 }
 
  
