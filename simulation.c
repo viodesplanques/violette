@@ -24,12 +24,20 @@ struct Villes{
 };
 struct Villes ville[4];
 
-// random
+// random int
 int randomnb(int max , int min){
 	double randomDomaine = RAND_MAX + 1.0;
     int entier1 = (int) (random() / randomDomaine * (abs(max)+abs(min)) +min);
     return entier1;
 }
+
+// random double
+double random_double(double min , double max){
+	double randomDomaine = RAND_MAX + 1.0;
+    double entier1 = (double) (rand() / randomDomaine * (abs(max)+abs(min)) +min);
+    return entier1;
+}
+
 // definition cadre total
 double xmax= 6411.29;
 double ymax= 3046.29;
@@ -38,6 +46,19 @@ double ymax= 3046.29;
 double xplas= 3205.64;
 double yplas= 2732;
 
+// degradation que dans le continent de plastique
+int degradation(double diminution, double r_ini){
+	double tps_deg=0;
+	while (r_ini>0) {
+		double r_deg = r_ini - r_ini*diminution + random_double(0.001, 0.01) ;//rayon en fonction de la degradation du plastique par an
+		r_ini -= r_deg; // le rayon diminue de r_deg
+		if (r_ini<=0){
+			r_ini+=0;
+		}
+		tps_deg += r_deg * 20; // 20 ans pour degrader un cercle de rayon 1cm
+	}
+	printf("temps =  %f \n",tps_deg);
+}
 
 // spirale (quand la particule rentre dans la zonespi)
 // probleme: car quand rentre peut en suite sortir donc il faut dire quand rentre sort plus JAMAIS
@@ -199,4 +220,3 @@ int main(int argc, char * argv[]){
 }
 
  
-
