@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="641" height="305" version="1.1" xml:space="preserve">
+
+<!-- Fond -->
+<rect style="fill:#0080FF" width="641" height="305" x="0" y="0" />
+
+<!-- cotes -->
+<path style="fill:#DBA901" d="M 641 1 C 619 -116 634 55 641 294" />
+<path style="fill:#DBA901" d="M -1 182 Q 24 73 1 117" />
+
+<!--villes-->
+<circle cx="641" cy="14" r="5" fill="red"/>
+<circle cx="641" cy="74" r="5" fill="red"/>
+<circle cx="641" cy="199" r="5" fill="red"/>
+<circle cx="0" cy="143" r="5" fill="red"/>
+<text x="570" y="14" class="small">Vancouver</text>
+<text x="546" y="74" class="small">San Fransisco</text>
+<text x="550" y="199" class="small">Los Angeles</text>
+<text x="6" y="143" class="small">Tokyo</text>
+
+<!--particule-->
+<circle cx="400" cy="200" r="5" fill="green"/>
+
+</svg>
