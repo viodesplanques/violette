@@ -2,8 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np 
 import math
 
-fig, ax = plt.subplots(figsize=(18,12), sharex=True, sharey= True)
-
+fig,ax= plt.subplots(figsize=(18,12), sharex=True, sharey= True)
 
 x=np.linspace(-0.5, 0.5, 10)
 
@@ -23,13 +22,15 @@ Oya_shivo.legend()
 
 Alaska = plt.subplot2grid((6, 6), (0, 2), colspan=2) 
 Alaska.quiver(x, y,-(1.56), -(1.56), label='Alaska')
-Vancouver= Alaska.scatter(0.5,-0.05, color='red', label='Vancouver') #(6411.29 km;2906.53 km)
+Vancouver= Alaska.scatter(0.5,-0.05, color='red')
+Alaska.text(0.52,-0.05,'Vancouver', color='red')
 Alaska.xaxis.set_visible(False)
 Alaska.yaxis.set_visible(False)
 Alaska.legend(loc='upper left')
 
 Kurishivo= plt.subplot2grid((6, 6), (1, 0), rowspan=2) 
-Tokyo= Kurishivo.scatter(-0.5, 0.05, color='purple',label='Tokyo') #(0; 1629.90 km)
+Tokyo= Kurishivo.scatter(-0.5, 0.05, color='purple') 
+Kurishivo.text(-0.4,0.05,'Tokyo', color='purple')
 Kurishivo.quiver(x, y,(1), (0.92), width=0.02, label='Kurishivo')
 Kurishivo.xaxis.set_visible(False)
 Kurishivo.yaxis.set_visible(False)
@@ -51,8 +52,10 @@ California= plt.subplot2grid((6, 6), (1, 3), rowspan=2)
 California.quiver(x, y,-(0.072), -(0.9), width=0.02, label='California')
 California.xaxis.set_visible(False)
 California.yaxis.set_visible(False)
-San_Fransisco= California.scatter(0.5,0.04, color='yellow', label='San Fransisco') #(6411.29 km;2307 km
-LA= California.scatter(0.5,0, color='green', label='Los Angeles')#(6411.29 km;1061.80 km)
+San_Fransisco= California.scatter(0.5,0.04, color='orange')
+LA= California.scatter(0.5,0, color='green')
+Kurishivo.text(3.88,0.04,'San Fransisco', color='orange')
+Kurishivo.text(3.88,0,'Los Angeles', color='green')
 California.legend(loc='upper left')
 
 
@@ -89,5 +92,6 @@ Spirale.xaxis.set_visible(False)
 Spirale.yaxis.set_visible(False)
 
 plt.tight_layout(pad=0)
-
 plt.show()
+plt.subplots_adjust(wspace = 0, hspace = 0)
+plt.savefig('Modele.png')
