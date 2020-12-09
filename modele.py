@@ -2,18 +2,20 @@ from matplotlib import pyplot as plt
 import numpy as np 
 import math
 
+'''Division de l'océan pacifique en 7 zones'''
 fig,ax= plt.subplots(figsize=(18,12), sharex=True, sharey= True)
 
 x=np.linspace(-0.5, 0.5, 10)
 
-x=[np.concatenate((x,x,x,x,x), 0)]
+x=[np.concatenate((x,x,x,x,x), 0)] 
 x=np.reshape(x,(1,-1))
-a=np.linspace(-0.06, 0.06,5)
+a=np.linspace(-0.06, 0.06,5) #?
 y=[]
 for i in range(0,len(a)):
-    b=[a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i]]
+    b=[a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i],a[i]] #?
     y.append(b)
     
+'''Definition des courants et des villes'''
 Oya_shivo = plt.subplot2grid((6, 6), (0, 0), colspan=2) 
 Oya_shivo.quiver(x, y,(0.02), -(0.02), label='Oya_shivo')
 Oya_shivo.xaxis.set_visible(False)
